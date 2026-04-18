@@ -25,11 +25,14 @@ check_python_import() {
 check_cli() {
     local cmd="$1"
     local display="${2:-$cmd}"
-    if output=$($cmd 2>&1 | head -1); then
+    local bin="${cmd%% *}"
+    if command -v "$bin" &>/dev/null; then
+        local output
+        output=$($cmd 2>&1 | head -1)
         echo "  ✅  $display → $output"
         PASS=$((PASS + 1))
     else
-        echo "  ❌  $display (not found or errored)"
+        echo "  ❌  $display (not found)"
         FAIL=$((FAIL + 1))
     fi
 }
