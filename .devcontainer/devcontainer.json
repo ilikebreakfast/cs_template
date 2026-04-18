@@ -1,0 +1,94 @@
+{
+  "name": "Python 3.11 Codespace Template",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "ms-python.pylint",
+        "ms-python.debugpy",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.jupyter-renderers",
+        "ms-toolsai.datawrangler",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "anthropics.claude-code",
+        "tomoki1207.pdf",
+        "mechatroner.rainbow-csv",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode.makefile-tools",
+        "redhat.vscode-yaml",
+        "donjayamanne.githistory",
+        "eamodio.gitlens",
+        "njpwerner.autodocstring",
+        "kevinrose.vsc-python-indent",
+        "streetsidesoftware.code-spell-checker",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "ms-ossdata.vscode-postgresql"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "python.formatting.provider": "black",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "jupyter.askForKernelRestart": false,
+        "jupyter.interactiveWindow.textEditor.executeSelection": true,
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 1000,
+        "editor.rulers": [88],
+        "editor.tabSize": 4
+      }
+    }
+  },
+
+  "forwardPorts": [8888, 8080, 5000, 5432, 6379],
+
+  "portsAttributes": {
+    "8888": {
+      "label": "Jupyter Lab",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "App Server",
+      "onAutoForward": "notify"
+    },
+    "5000": {
+      "label": "Flask / API",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "remoteEnv": {
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}",
+    "DATABASE_URL": "${localEnv:DATABASE_URL}",
+    "ODBC_CONNECTION_STRING": "${localEnv:ODBC_CONNECTION_STRING}"
+  },
+
+  "postCreateCommand": "bash .devcontainer/scripts/setup.sh",
+
+  "remoteUser": "vscode"
+}
