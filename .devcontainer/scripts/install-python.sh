@@ -41,8 +41,7 @@ sudo apt-get install -y \
     wget \
     ffmpeg \
     libpq-dev \
-    default-libmysqlclient-dev \
-    docker-compose-plugin
+    default-libmysqlclient-dev
 echo "✅  System dependencies installed."
 
 # ---------------------------------------------------------------------------
