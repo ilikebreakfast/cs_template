@@ -6,6 +6,12 @@ echo "🐍  install-python.sh — Python environment setup"
 echo "============================================================"
 
 # ---------------------------------------------------------------------------
+# 0. Remove stale Yarn apt repo baked into the base image (expired GPG key)
+# ---------------------------------------------------------------------------
+sudo rm -f /etc/apt/sources.list.d/yarn.list
+sudo rm -f /etc/apt/sources.list.d/yarn.list.save
+
+# ---------------------------------------------------------------------------
 # 1. System packages
 # ---------------------------------------------------------------------------
 echo ""
