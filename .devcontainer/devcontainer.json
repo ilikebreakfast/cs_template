@@ -1,5 +1,5 @@
 {
-  "name": "Python 3.11 Codespace Template",
+  "name": "Python 3.11 Codespace Template (v2)",
   "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
 
   "features": {
