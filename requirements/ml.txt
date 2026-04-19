@@ -1,0 +1,46 @@
+# =============================================================================
+# ML / Deep Learning — installed after core
+# Edit this file, then run: make pin-deps
+# Note: torch/torchvision/torchaudio are installed separately via CPU wheel
+#       tensorflow and paddleocr are installed with soft-fail fallback
+# =============================================================================
+
+# Installed separately (CPU wheel):
+# torch
+# torchvision
+# torchaudio
+
+# Installed with soft-fail:
+# tensorflow
+# paddleocr
+# surya-ocr
+# cx-Oracle
+
+# HuggingFace
+transformers
+sentence-transformers
+huggingface-hub
+datasets
+
+# Deep learning extras
+onnx
+onnxruntime
+einops
+timm
+accelerate
+
+# Classical ML
+xgboost
+lightgbm
+catboost
+optuna
+mlflow
+shap
+lime
+imbalanced-learn
+
+# Computer vision
+opencv-python-headless
+Pillow
+imageio
+scikit-image

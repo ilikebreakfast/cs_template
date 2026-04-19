@@ -9,19 +9,6 @@ PASS=0
 WARN=0
 FAIL=0
 
-# Helper functions
-check_python_import() {
-    local pkg="$1"
-    local display="${2:-$1}"
-    if python -c "import $pkg" 2>/dev/null; then
-        echo "  ✅  $display"
-        PASS=$((PASS + 1))
-    else
-        echo "  ❌  $display (import failed)"
-        FAIL=$((FAIL + 1))
-    fi
-}
-
 check_cli() {
     local cmd="$1"
     local display="${2:-$cmd}"
@@ -50,66 +37,67 @@ check_env_var() {
 }
 
 # ---------------------------------------------------------------------------
-# Python packages
+# Python packages — all imports in a single Python process (fast)
 # ---------------------------------------------------------------------------
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🐍  Python package imports"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Core data science
-check_python_import "numpy"
-check_python_import "pandas"
-check_python_import "scipy"
-check_python_import "sklearn" "scikit-learn"
+IMPORT_OUTPUT=$(python3 - <<'PYEOF'
+checks = [
+    ("numpy",       "numpy"),
+    ("pandas",      "pandas"),
+    ("scipy",       "scipy"),
+    ("sklearn",     "scikit-learn"),
+    ("torch",       "torch"),
+    ("tensorflow",  "tensorflow"),
+    ("cv2",         "opencv (cv2)"),
+    ("pytesseract", "pytesseract"),
+    ("easyocr",     "easyocr"),
+    ("anthropic",   "anthropic"),
+    ("openai",      "openai"),
+    ("pyodbc",      "pyodbc"),
+    ("sqlalchemy",  "sqlalchemy"),
+    ("psycopg2",    "psycopg2"),
+    ("pymongo",     "pymongo"),
+    ("redis",       "redis"),
+    ("requests",    "requests"),
+    ("httpx",       "httpx"),
+    ("bs4",         "beautifulsoup4 (bs4)"),
+    ("selenium",    "selenium"),
+    ("playwright",  "playwright"),
+    ("fastapi",     "fastapi"),
+    ("uvicorn",     "uvicorn"),
+    ("polars",      "polars"),
+    ("pyarrow",     "pyarrow"),
+    ("matplotlib",  "matplotlib"),
+    ("plotly",      "plotly"),
+    ("seaborn",     "seaborn"),
+    ("jupyter",     "jupyter"),
+    ("ipykernel",   "ipykernel"),
+]
 
-# Deep learning
-check_python_import "torch"
-check_python_import "tensorflow"
+passed = failed = 0
+for module, display in checks:
+    try:
+        __import__(module)
+        print(f"  \u2705  {display}")
+        passed += 1
+    except ImportError:
+        print(f"  \u274c  {display} (import failed)")
+        failed += 1
 
-# Computer vision
-check_python_import "cv2" "opencv (cv2)"
+print(f"__COUNTS__ {passed} {failed}")
+PYEOF
+)
 
-# OCR
-check_python_import "pytesseract"
-check_python_import "easyocr"
-
-# AI APIs
-check_python_import "anthropic"
-check_python_import "openai"
-
-# Databases
-check_python_import "pyodbc"
-check_python_import "sqlalchemy"
-check_python_import "psycopg2"
-check_python_import "pymongo"
-check_python_import "redis"
-
-# Web / HTTP
-check_python_import "requests"
-check_python_import "httpx"
-check_python_import "bs4" "beautifulsoup4 (bs4)"
-
-# Scraping / browser automation
-check_python_import "selenium"
-check_python_import "playwright"
-
-# Web framework
-check_python_import "fastapi"
-check_python_import "uvicorn"
-
-# Data formats
-check_python_import "polars"
-check_python_import "pyarrow"
-
-# Visualisation
-check_python_import "matplotlib"
-check_python_import "plotly"
-check_python_import "seaborn"
-
-# Jupyter
-check_python_import "jupyter"
-check_python_import "ipykernel"
+echo "$IMPORT_OUTPUT" | grep -v "^__COUNTS__"
+COUNTS=$(echo "$IMPORT_OUTPUT" | grep "^__COUNTS__")
+PY_PASS=$(echo "$COUNTS" | awk '{print $2}')
+PY_FAIL=$(echo "$COUNTS" | awk '{print $3}')
+PASS=$((PASS + PY_PASS))
+FAIL=$((FAIL + PY_FAIL))
 
 # ---------------------------------------------------------------------------
 # CLI tools
@@ -127,19 +115,13 @@ check_cli "node --version" "node"
 check_cli "npm --version" "npm"
 check_cli "tesseract --version" "tesseract"
 
-# pyenv may not be on PATH in all shells; attempt gracefully
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv &>/dev/null; then
     check_cli "pyenv --version" "pyenv"
 else
-    # Try loading pyenv from common location
-    export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
-    if command -v pyenv &>/dev/null; then
-        check_cli "pyenv --version" "pyenv"
-    else
-        echo "  ⚠️   pyenv (not found on PATH — may need shell reload)"
-        WARN=$((WARN + 1))
-    fi
+    echo "  ⚠️   pyenv (not found — run: source ~/.bashrc)"
+    WARN=$((WARN + 1))
 fi
 
 # ---------------------------------------------------------------------------
@@ -168,9 +150,10 @@ echo "  ❌  Failed   : $FAIL"
 echo ""
 
 if [ "$FAIL" -gt 0 ]; then
-    echo "  ⚠️  Some checks failed. Review the output above."
-    echo "     Run 'bash .devcontainer/scripts/install-python.sh' to reinstall."
+    echo "  ⚠️  Some checks failed. Run: bash .devcontainer/scripts/install-python.sh"
+    echo "============================================================"
+    exit 1
 else
     echo "  🎉 All required checks passed!"
+    echo "============================================================"
 fi
-echo "============================================================"
