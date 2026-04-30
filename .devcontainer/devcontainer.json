@@ -1,5 +1,5 @@
 {
-  "name": "Python 3.11 Codespace Template",
+  "name": "Python 3.11 Codespace Template (v2)",
   "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
 
   "features": {
@@ -24,7 +24,7 @@
         "ms-toolsai.datawrangler",
         "GitHub.copilot",
         "GitHub.copilot-chat",
-        "anthropics.claude-code",
+        "anthropic.claude-code",
         "tomoki1207.pdf",
         "mechatroner.rainbow-csv",
         "ms-azuretools.vscode-docker",

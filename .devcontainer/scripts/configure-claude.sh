@@ -6,10 +6,19 @@ echo "🤖  configure-claude.sh — Claude Code CLI setup"
 echo "============================================================"
 
 # ---------------------------------------------------------------------------
-# 1. Check if claude CLI is already installed
+# Pre-flight: ensure npm is available
+# ---------------------------------------------------------------------------
+if ! command -v npm &>/dev/null; then
+    echo "❌  npm not found. The Node.js feature may not have installed correctly."
+    echo "    Ensure 'ghcr.io/devcontainers/features/node:1' is in devcontainer.json"
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# 1. Install Claude Code CLI if not present
 # ---------------------------------------------------------------------------
 if command -v claude &>/dev/null; then
-    echo "ℹ️   claude CLI is already installed: $(claude --version 2>/dev/null || echo 'version unknown')"
+    echo "ℹ️   claude CLI already installed: $(claude --version 2>/dev/null || echo 'version unknown')"
     echo "    Skipping install."
 else
     echo ""
@@ -22,9 +31,12 @@ fi
 # 2. Verify installation
 # ---------------------------------------------------------------------------
 echo ""
-echo "🔍  Verifying claude CLI..."
 CLAUDE_VERSION="$(claude --version 2>/dev/null || echo 'unknown')"
-echo "    claude version: $CLAUDE_VERSION"
+if [ "$CLAUDE_VERSION" = "unknown" ]; then
+    echo "⚠️  claude installed but version check failed — may be a PATH issue."
+else
+    echo "✅  claude version: $CLAUDE_VERSION"
+fi
 
 # ---------------------------------------------------------------------------
 # 3. Check ANTHROPIC_API_KEY
@@ -35,20 +47,12 @@ if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
 else
     echo "⚠️  WARNING: ANTHROPIC_API_KEY is not set."
     echo ""
-    echo "    To add your API key as a GitHub Codespace secret:"
-    echo ""
-    echo "    1. Go to https://github.com"
-    echo "    2. Click your avatar in the top-right corner"
-    echo "    3. Select 'Settings' from the dropdown menu"
-    echo "    4. In the left sidebar, click 'Codespaces'"
-    echo "    5. Under 'Codespaces secrets', click 'New secret'"
-    echo "    6. Set Name to: ANTHROPIC_API_KEY"
-    echo "    7. Paste your Anthropic API key as the Value"
-    echo "    8. Under 'Repository access', select the repositories"
-    echo "       that should have access to this secret"
-    echo "    9. Click 'Add secret'"
-    echo "   10. Rebuild or restart your Codespace for the secret"
-    echo "       to become available."
+    echo "    To add it as a GitHub Codespace secret:"
+    echo "    1. Go to github.com → Avatar → Settings"
+    echo "    2. Left sidebar → Codespaces"
+    echo "    3. New secret → Name: ANTHROPIC_API_KEY"
+    echo "    4. Select which repos can access it → Add secret"
+    echo "    5. Rebuild this Codespace to pick up the secret"
     echo ""
     echo "    Get your API key at: https://console.anthropic.com/"
 fi

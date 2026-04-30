@@ -1,0 +1,61 @@
+# =============================================================================
+# Extras — OCR, scraping, databases, additional viz, NLP, workflow
+# Edit this file, then run: make pin-deps
+# Note: paddleocr, surya-ocr, cx-Oracle installed with soft-fail in install script
+# =============================================================================
+
+# OCR + Document processing
+pytesseract
+easyocr
+pdf2image
+pdfplumber
+pymupdf
+python-doctr
+
+# Web scraping / browser automation
+selenium
+playwright
+scrapy
+fake-useragent
+cloudscraper
+mechanize
+pyppeteer
+
+# Databases
+pyodbc
+sqlalchemy
+psycopg2-binary
+pymysql
+pymongo
+redis
+
+# Data formats
+openpyxl
+xlrd
+xlwt
+pyarrow
+polars
+fastparquet
+h5py
+tables
+orjson
+msgpack
+
+# Data validation (extras)
+great-expectations
+pandera
+
+# Visualisation (extras)
+bokeh
+altair
+folium
+
+# NLP
+nltk
+spacy
+gensim
+textblob
+
+# Workflow / automation
+prefect
+celery

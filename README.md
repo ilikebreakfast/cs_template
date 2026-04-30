@@ -1,30 +1,29 @@
 # Python 3.11 Codespace Template
 
-A production-ready GitHub Codespace template for data science, machine learning, OCR, web scraping, and API development. Batteries included: Python 3.11 base, 80+ packages, Jupyter Lab, PostgreSQL, Redis, Claude Code, and a full VS Code extension suite.
+A production-ready GitHub Codespace template for data science, machine learning, OCR, web scraping, and API development. Python 3.11 base, tiered packages, Jupyter Lab, PostgreSQL, Redis, Claude Code, and a full VS Code extension suite.
 
 ---
 
 ## What's Included
 
-### Python Packages (80+)
+### Python Packages — Tiered Installation
 
-| Category | Packages |
-|---|---|
-| ML Core | numpy, pandas, scipy, scikit-learn, xgboost, lightgbm, catboost, optuna, mlflow, shap |
-| Deep Learning | torch (CPU), tensorflow, onnx, einops, timm, accelerate |
-| HuggingFace | transformers, sentence-transformers, datasets, huggingface-hub |
-| Computer Vision | opencv-python-headless, Pillow, imageio, scikit-image |
-| OCR / Docs | pytesseract, easyocr, paddleocr, pdf2image, pdfplumber, pymupdf, python-doctr, surya-ocr |
-| NLP | nltk, spacy, gensim, textblob |
-| Web Scraping | requests, httpx, aiohttp, beautifulsoup4, selenium, playwright, scrapy, cloudscraper |
-| Databases | pyodbc, sqlalchemy, psycopg2, pymysql, pymongo, redis, cx-Oracle |
-| Data Formats | openpyxl, pyarrow, polars, fastparquet, h5py, orjson, msgpack |
-| Validation | pydantic, great-expectations, pandera |
-| Visualisation | matplotlib, seaborn, plotly, bokeh, altair, folium |
-| API / Web | fastapi, uvicorn, anthropic, openai, python-dotenv |
-| Automation | prefect, celery |
-| Testing | pytest, pytest-cov, pytest-asyncio |
-| Utilities | tqdm, rich, loguru, click, typer, tenacity, faker, hypothesis |
+Packages are split into three tiers so you only install what you need:
+
+| Tier | File | Contents |
+|---|---|---|
+| **core** | `requirements/core.txt` | numpy, pandas, scipy, scikit-learn, requests, fastapi, anthropic, openai, jupyter, pytest, pydantic, and ~15 more always-needed packages |
+| **ml** | `requirements/ml.txt` | torch (CPU), transformers, sentence-transformers, xgboost, lightgbm, optuna, mlflow, opencv, shap, and more |
+| **extras** | `requirements/extras.txt` | pytesseract, easyocr, selenium, playwright, pyodbc, pymongo, polars, pyarrow, bokeh, spacy, prefect, and more |
+
+By default all three tiers are installed. To install selectively:
+
+```bash
+INSTALL_TIERS=core make setup          # core only
+INSTALL_TIERS=core,ml make setup       # core + ML, no extras
+make install-core                      # add core to existing env
+make install-extras                    # add extras to existing env
+```
 
 ### VS Code Extensions
 
@@ -58,12 +57,11 @@ A production-ready GitHub Codespace template for data science, machine learning,
 1. Open this repository on GitHub.com
 2. Click the green **Code** button near the top right
 3. Select the **Codespaces** tab
-4. Click **Create codespace on main** (or your chosen branch)
-5. GitHub will build the container — this takes 5–10 minutes on first build
-6. When the editor opens, `setup.sh` runs automatically via `postCreateCommand`
-7. The terminal shows progress; when complete run `make health` to verify
+4. Click **Create codespace on main**
+5. GitHub builds the container (~5 min first time); `setup.sh` runs automatically
+6. Run `make health` to verify everything is working
 
-**Tip:** Pre-build the Codespace via *Repository Settings → Codespaces → Set up prebuild* to make it open in under 30 seconds.
+**Tip:** Pre-build via *Repository Settings → Codespaces → Set up prebuild* for instant startup.
 
 ---
 
@@ -77,10 +75,8 @@ cd YOUR_REPO
 code .
 ```
 
-When VS Code opens, a notification appears: **Reopen in Container**. Click it.  
-If it doesn't appear: `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
-
-The container builds and `setup.sh` runs. Everything else is identical to the Codespace experience.
+When VS Code opens: **Reopen in Container** notification → click it.  
+Or: `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**.
 
 ---
 
@@ -93,33 +89,28 @@ git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
 cd YOUR_REPO
 
 python3.11 -m venv .venv
-source .venv/bin/activate          # Linux / macOS
-# .venv\Scripts\activate           # Windows
+source .venv/bin/activate
 
 pip install --upgrade pip
 bash .devcontainer/scripts/install-python.sh
 bash scripts/configure-env.sh
 ```
 
-Some system packages (tesseract, unixodbc, chromium-driver) need to be installed manually. On Ubuntu/Debian: `sudo apt-get install tesseract-ocr unixodbc-dev chromium-driver`.
+On Ubuntu/Debian, install system deps first:
+```bash
+sudo apt-get install tesseract-ocr unixodbc-dev chromium-driver
+```
 
 ---
 
 ## Setting ANTHROPIC_API_KEY as a Codespace Secret
 
-Codespace secrets are injected as environment variables at container startup. They are never stored in the repo.
-
-1. Go to **github.com** and sign in
-2. Click your **avatar** (top right corner) → **Settings**
-3. In the left sidebar scroll down to **Codespaces**
-4. Under *Codespaces secrets*, click **New secret**
-5. **Name:** `ANTHROPIC_API_KEY`
-6. **Value:** paste your key from the Anthropic console
-7. Under *Repository access*, tick the repositories that need this secret
-8. Click **Add secret**
-9. Rebuild your Codespace: `Ctrl+Shift+P` → **Codespaces: Rebuild Container**
-
-The secret is now available as `$ANTHROPIC_API_KEY` inside the container. Run `claude` to open Claude Code.
+1. Go to **github.com** → your avatar → **Settings**
+2. Left sidebar → **Codespaces**
+3. Under *Codespaces secrets* → **New secret**
+4. **Name:** `ANTHROPIC_API_KEY`, **Value:** your key
+5. Select which repos can access it → **Add secret**
+6. Rebuild: `Ctrl+Shift+P` → **Codespaces: Rebuild Container**
 
 ---
 
@@ -127,43 +118,57 @@ The secret is now available as `$ANTHROPIC_API_KEY` inside the container. Run `c
 
 ### Default: Python 3.11
 
-The container's base image is `mcr.microsoft.com/devcontainers/python:3.11-bullseye`. Python 3.11 is the system Python and is the recommended version for all ML workloads.
+The base image is `mcr.microsoft.com/devcontainers/python:3.11-bullseye`. Python 3.11 is the system default and is recommended for all ML workloads.
 
 ### Secondary: Python 3.13 (via pyenv)
 
-Python 3.13.0 is installed by `install-python.sh` as a secondary version using `pyenv`. It is **not** set as the global or project default.
-
-**Switch to Python 3.13 for a project:**
+Python 3.13.0 is installed as a secondary version. It is **not** set as default.
 
 ```bash
-make switch-313
-# or: pyenv local 3.13.0
-```
-
-**Switch back to Python 3.11:**
-
-```bash
-make switch-311
-# or: pyenv local 3.11
-```
-
-**List all available versions:**
-
-```bash
-make python-version
-# or: pyenv versions
+make switch-313     # switch this project to 3.13
+make switch-311     # switch back to 3.11
+make python-version # list all installed versions
 ```
 
 ### Compatibility Warnings for Python 3.13
 
-| Package | Status on Python 3.13 |
+| Package | Status |
 |---|---|
-| `torch` / torchvision / torchaudio | May fail — binary wheels often lag behind new CPython releases |
-| `tensorflow` | Often unsupported on the latest CPython; use 3.11 |
-| `paddleocr` | Has known C-extension issues on 3.13 |
-| `cx-Oracle` | Oracle's official driver; 3.13 support may be absent |
+| `torch` / torchvision / torchaudio | May fail — wheels lag behind new CPython releases |
+| `tensorflow` | Often unsupported on latest CPython |
+| `paddleocr` | Known C-extension issues on 3.13 |
+| `cx-Oracle` | Oracle driver; 3.13 support may be absent |
 
-**Recommendation:** Use Python 3.11 for any project that depends on the packages above. Switch to 3.13 only for pure-Python or stdlib experiments.
+Use Python 3.11 for any project that depends on the above.
+
+---
+
+## Package Version Management
+
+The `requirements/*.in` files are the human-editable source of truth (unpinned). The `requirements/*.txt` files are what get installed.
+
+**To lock exact versions** (recommended before sharing or deploying):
+
+```bash
+make pin-deps
+git add requirements/*.txt
+git commit -m "chore: pin dependencies"
+```
+
+This runs `pip-compile` on each `.in` file and writes locked `.txt` files. Re-run whenever you add or change packages in a `.in` file.
+
+**To add a new package:**
+
+```bash
+# 1. Add it to the appropriate .in file
+echo "httpx" >> requirements/core.in
+
+# 2. Regenerate the lock
+make pin-deps
+
+# 3. Install it
+make install-core
+```
 
 ---
 
@@ -171,16 +176,20 @@ make python-version
 
 | Command | Description |
 |---|---|
-| `make setup` | Run the full setup script (install packages, configure env, health check) |
+| `make setup` | Full setup (all tiers, Claude CLI, env, health check) |
+| `make install-core` | Install core packages only |
+| `make install-ml` | Install ML/DL packages |
+| `make install-extras` | Install OCR/scraping/DB packages |
+| `make pin-deps` | Lock versions with pip-compile |
 | `make jupyter` | Start Jupyter Lab at `http://localhost:8888` |
-| `make test` | Run pytest with coverage report |
-| `make lint` | Format with black and lint with pylint |
+| `make test` | Run pytest with coverage |
+| `make lint` | Format with black + lint with pylint |
 | `make format` | Format with black only |
 | `make clean` | Remove `__pycache__`, `.pyc`, `.ipynb_checkpoints`, `*.log` |
-| `make docker-up` | Start PostgreSQL and Redis in the background |
-| `make docker-down` | Stop containers (data volumes preserved) |
-| `make docker-reset` | Stop containers, delete volumes, restart fresh |
-| `make health` | Run the health check script |
+| `make docker-up` | Start PostgreSQL and Redis |
+| `make docker-down` | Stop containers (data preserved) |
+| `make docker-reset` | Wipe volumes and restart |
+| `make health` | Run environment health check |
 | `make python-version` | List pyenv Python versions |
 | `make switch-313` | Switch project to Python 3.13.0 |
 | `make switch-311` | Switch project back to Python 3.11 |
@@ -206,9 +215,9 @@ make python-version
 |---|---|
 | Host | `localhost` |
 | Port | `6379` |
-| Connection URL | `redis://localhost:6379/0` |
+| URL | `redis://localhost:6379/0` |
 
-Start both services with `make docker-up`. Both have healthchecks configured.
+Start both with `make docker-up`.
 
 ---
 
@@ -217,28 +226,35 @@ Start both services with `make docker-up`. Both have healthchecks configured.
 ```
 .
 ├── .devcontainer/
-│   ├── devcontainer.json          # Codespace / Dev Container config
+│   ├── devcontainer.json
 │   └── scripts/
-│       ├── setup.sh               # Main setup orchestrator (postCreateCommand)
-│       ├── install-python.sh      # System deps, pyenv, pip packages
-│       └── configure-claude.sh    # Claude Code CLI install + key check
+│       ├── common.sh              # Shared REPO_ROOT utility (sourced by other scripts)
+│       ├── setup.sh               # Main orchestrator (postCreateCommand)
+│       ├── install-python.sh      # System deps, pyenv, pip tiers
+│       └── configure-claude.sh    # Claude Code CLI
+├── requirements/
+│   ├── core.in                    # Edit this to add core packages
+│   ├── core.txt                   # Installed version (run make pin-deps to lock)
+│   ├── ml.in                      # Edit this for ML/DL packages
+│   ├── ml.txt
+│   ├── extras.in                  # Edit this for OCR/scraping/DB packages
+│   └── extras.txt
+├── requirements.txt               # Convenience: installs all three tiers
 ├── scripts/
-│   ├── configure-env.sh           # .env, git hooks, folder scaffold
-│   ├── health-check.sh            # Import + CLI + env var verification
+│   ├── configure-env.sh
+│   ├── health-check.sh
 │   ├── install-deps.sh            # Reserved for project-specific deps
-│   └── seed-db.sh                 # Reserved for database seeding
-├── data/
-│   ├── raw/                       # Raw input data (gitignored)
-│   └── processed/                 # Cleaned / transformed data (gitignored)
-├── models/                        # Trained model artefacts (gitignored)
-├── notebooks/                     # Jupyter notebooks
-├── src/                           # Application source code
-├── tests/                         # pytest test suite
-├── logs/                          # Runtime logs (gitignored)
-├── docker-compose.yml             # PostgreSQL + Redis services
-├── Makefile                       # Developer shortcuts
-├── requirements.txt               # Python dependencies
-├── .env.example                   # Environment variable template
+│   └── seed-db.sh
+├── data/raw/                      # gitignored
+├── data/processed/                # gitignored
+├── models/                        # gitignored
+├── notebooks/
+├── src/
+├── tests/
+├── logs/                          # gitignored
+├── docker-compose.yml
+├── Makefile
+├── .env.example
 ├── .gitignore
 └── README.md
 ```
@@ -253,20 +269,12 @@ Start both services with `make docker-up`. Both have healthchecks configured.
 ImportError: libGL.so.1: cannot open shared object file
 ```
 
-**Fix:** The template installs `opencv-python-headless` which does not require `libGL`. If you see this error you may have installed `opencv-python` instead. Run:
-
+Use `opencv-python-headless` instead of `opencv-python`:
 ```bash
-pip uninstall opencv-python
-pip install opencv-python-headless
+pip uninstall opencv-python && pip install opencv-python-headless
 ```
 
 ### pyodbc — unixodbc missing
-
-```
-pyodbc.Error: ('01000', "...")
-```
-
-**Fix:** `unixodbc-dev` and `odbcinst` are installed by `install-python.sh`. If running locally without Docker, install them manually:
 
 ```bash
 sudo apt-get install -y unixodbc unixodbc-dev odbcinst
@@ -275,26 +283,12 @@ pip install pyodbc
 
 ### Tesseract not found
 
-```
-pytesseract.pytesseract.TesseractNotFoundError
-```
-
-**Fix:** `tesseract-ocr` is installed by `install-python.sh`. Verify it is on the PATH:
-
 ```bash
-which tesseract
-tesseract --version
+which tesseract && tesseract --version
+# If missing: sudo apt-get install tesseract-ocr tesseract-ocr-eng
 ```
-
-If running locally, install: `sudo apt-get install tesseract-ocr tesseract-ocr-eng`.
 
 ### Playwright browsers not installed
-
-```
-playwright._impl._errors.Error: Executable doesn't exist at ...
-```
-
-**Fix:** `install-python.sh` runs `playwright install chromium firefox`. Re-run it manually:
 
 ```bash
 playwright install chromium firefox
@@ -302,31 +296,31 @@ playwright install chromium firefox
 
 ### ANTHROPIC_API_KEY not set
 
-```
-anthropic.AuthenticationError: No API key provided
-```
-
-**Fix:** Follow the **Setting ANTHROPIC_API_KEY as a Codespace Secret** section above. For local development, add the key to your `.env` file and ensure `python-dotenv` is loading it:
-
+Add to `.env` and load it:
 ```python
 from dotenv import load_dotenv
 load_dotenv()
 ```
+Or set it as a Codespace secret (see above).
 
 ### torch install failing on Python 3.13
 
-`torch` binary wheels are published per CPython version. When a new Python release is very recent, wheels may not yet exist.
+Wheels lag behind new CPython releases. Switch back: `make switch-311`.
 
-**Fix:** Switch back to Python 3.11 (`make switch-311`) or install torch from source (slow, not recommended). Monitor the PyTorch website for 3.13 wheel availability.
+### apt-get update fails (Yarn GPG error)
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/yarn.list
+sudo apt-get update
+```
+This is handled automatically by `install-python.sh`.
 
 ---
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-improvement`
-3. Make your changes and run `make lint` and `make test`
-4. Commit with a clear message: `git commit -m "feat: add XYZ support"`
-5. Push and open a Pull Request against `main`
-
-Please keep scripts idempotent, add `|| echo "warning"` around optional installs, and update this README if you add new tools or environment variables.
+1. Fork → feature branch → `make lint` + `make test` → PR against `main`
+2. Keep scripts idempotent
+3. Use `|| echo "warning"` for optional installs
+4. Update `requirements/*.in` (not `.txt`) for new packages, then run `make pin-deps`
+5. Update this README for new tools or env vars

@@ -1,0 +1,73 @@
+# =============================================================================
+# Core — always installed
+# Edit this file, then run: make pin-deps
+# =============================================================================
+
+# Python packaging
+setuptools
+wheel
+pip
+pip-tools
+
+# Core data science
+numpy
+pandas
+scipy
+scikit-learn
+statsmodels
+joblib
+
+# HTTP clients
+requests
+httpx
+aiohttp
+beautifulsoup4
+lxml
+
+# API / Web framework
+anthropic
+openai
+fastapi
+uvicorn
+python-dotenv
+
+# Data validation
+pydantic
+
+# Jupyter
+jupyter
+jupyterlab
+ipykernel
+ipywidgets
+nbformat
+nbconvert
+
+# Visualisation (core)
+matplotlib
+seaborn
+plotly
+
+# Utilities
+tqdm
+rich
+loguru
+click
+typer
+python-dateutil
+arrow
+pytz
+tenacity
+retry
+schedule
+
+# Security
+cryptography
+passlib
+python-jose
+
+# Testing
+pytest
+pytest-cov
+pytest-asyncio
+hypothesis
+faker
